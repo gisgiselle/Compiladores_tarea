@@ -5,6 +5,7 @@ from os import getcwd
 
 #from listeners.semantic import SemanticListener
 from listeners.codegen import CodeGen
+from listeners.hierarchy import HierarchyListener
 
 PATH=getcwd()
 
@@ -23,14 +24,16 @@ def compile(file):
     walker = ParseTreeWalker()
 
     #Temporalmente omitimos el análisis semántico
-    #walker.walk(SemanticListener(), tree)
+    walker.walk(HierarchyListener(), tree)
 
     c = CodeGen(walker, tree)
-    save(c.getText(), file)
+    c.generar()
+    #save(c.getText(), file)
+    print(c.result)
 
 def dummy():
     raise SystemExit(1)
 
 
 if __name__ == '__main__':
-    compile('../resources/semantic/input/anattributenamedself.cool')
+    compile('../resources/codegen/input/fibo.cool')

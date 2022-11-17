@@ -3,6 +3,14 @@ from antlr.coolParser import coolParser
 from util.asm import *
 from util.structure import allClasses
 
+"""
+Los tipos quedarán así:
+object 0
+IO 1
+Int 2
+String 3
+Boolean 4"""
+
 
 class Literales(coolListener):
     def __init__(self):
@@ -10,11 +18,6 @@ class Literales(coolListener):
         self.result = ""
 
     def enterInt(self, ctx:coolParser.IntContext):
-        """object 0
-        IO 1
-        Int 2
-        String 3
-        Boolean 4"""
         self.result += cTplInt.substitute(idx=self.idx, tag=2, value=ctx.getText())
         self.idx = self.idx + 1
 
@@ -28,10 +31,11 @@ class Literales(coolListener):
 
 
 class CodeGen():
-    def __init__(self, tree, walker):
+    def __init__(self, walker, tree):
         self.result = ""
         self.tree = tree
         self.walker = walker
+        self.idx = 0
 
     def generar(self):
         self.segDatos()
@@ -44,18 +48,18 @@ class CodeGen():
         self.result = literales.result +\
                       self.tablaNombres() +\
                       self.tablaModelosConstructores() +\
-                      self.tablaMedodos() +\
+                      self.tablaMetodos() +\
                       self.objetosModelos()
 
     def tablaNombres(self):
-        r = "class_nameTab:"
-        for k in allClasses():
+        r = "class_nameTab:\n"
+        for k in allClasses().values():
             self.result += cTplInt.substitute(idx=self.idx, tag=2, value=len(k.name))
             self.idx = self.idx + 1
 
             self.result += cTplStr.substitute(idx=self.idx, tag=3, size=4 + (len(k.name) + 1) % 4,
                                               sizeIdx=(self.idx - 1), value=k.name)
-            r += "    .word str_const" + self.idx
+            r += "    .word str_const{}\n".format(self.idx)
             self.idx = self.idx + 1
 
         return r
@@ -65,15 +69,15 @@ class CodeGen():
 
     def tablaMetodos(self):
         r = ""
-        for k in allClasses():
-            r += k.name + "_dispTab:"
-            for k1, v1 in k.methods():
-                r += "    .word " + k.name + "." + k1
+        for k in allClasses().values():
+            r += k.name + "_dispTab:\n"
+            for k1 in k.methods:
+                r += "    .word {}.{}\n".format(k.name, k1)
 
         return r
 
     def objetosModelos(self):
-        for k in allClasses()[4:]:
+        for k in allClasses():
             pass
 
         return ""
