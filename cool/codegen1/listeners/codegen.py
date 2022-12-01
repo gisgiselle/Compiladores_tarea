@@ -90,7 +90,16 @@ class CodeGen():
         return r
 
     def objetosModelos(self):
-        for k in allClasses():
+        #NECESITO LOS NOMBRES DE TODAS LAS CLASES ITERO ALLCLASSES() LO
+        # IMPORTANTE ES LA POSICION DEBE COINCIDIR CON EL NUMERO QUE YO ASIGNE
+        #PARA CADA CLASE HAY QUE OBTENER LISTA DE METODOS
+        # DENTRO DE KLASS HAY UN SELF.METHODS QUE ES SYMBLE
+        # TABLE VERIFICAR YENDO HACIA ARRIBA QUIEN ES EL PAPA,
+        # SI ES OBJECT IMPRIMO OPBJECTS SI NO,
+        # SUBO HACIA ARRIBA Y PREGUNTO QUE METODOS TIENE
+        r = ""
+        for k in allClasses().values():
+            r+= k.name + "_"
             pass
 
         return ""
